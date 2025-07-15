@@ -1,0 +1,30 @@
+ What I Learned:
+
+1. Database Design with Foreign Keys
+Created a normalized relational database with tables like interns, tasks, profiles, projects, and a junction table intern_projects.
+
+Learned how to use foreign key constraints to establish relationships between tables.
+
+2. Manual SQL Queries in Node.js
+Used the mysql2/promise library to write and execute raw SQL queries.
+
+Understood how to structure parameterized queries to prevent SQL injection and make the code secure and flexible.
+
+3. Modular Architecture
+Separated application logic into models, controllers, and routes.
+
+Models handle database logic, controllers process requests and responses, and routes map HTTP methods to controller functions.
+
+4. Working Without an ORM
+Gained practical experience in handling raw SQL without the abstraction of ORMs like Sequelize.
+
+5. REST API Design
+Built clean, RESTful endpoints for CRUD operations.
+
+Designed endpoints to return meaningful status codes and messages.
+
+Tested all endpoints
+
+6. Debugging & Error Handling
+
+Implemented basic error handling to return 4xx/5xx responses as needed.

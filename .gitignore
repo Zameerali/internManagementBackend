@@ -1,0 +1,34 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+log.txt
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Optional build/output folders
+dist/
+build/
+
+# Debug files
+*.swp
+*.swo
+
+# Editor/IDE config files
+.vscode/
+.idea/
+*.code-workspace
+
+# Optional: MySQL dump or backup files
+*.sql
+*.dump
