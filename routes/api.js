@@ -7,6 +7,8 @@ const internProjectController = require('../controllers/internProjectController'
 const projectController = require('../controllers/projectController');
 router.get('/interns', internController.getAllInterns);
 router.get('/interns/:id/profile', internController.getInternWithProfile);
+router.post('/interns', internController.createIntern);
+
 
 router.post('/interns/:id/tasks', taskController.addTask);
 router.get('/interns/:id/tasks', taskController.getTasksByIntern);
