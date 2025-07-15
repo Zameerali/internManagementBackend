@@ -14,10 +14,15 @@ router.put('/tasks/status', taskController.updateTaskStatus);
 router.get('/tasks/full', taskController.getAllTasksWithIntern);
 
 
-router.post('/interns/:id/projects', internProjectController.assignProjects);
-
-router.get('/interns/project', projectController.getAllProjects )
-router.post('/interns/project', projectController.addProject )
+router.post('/interns/projects', internProjectController.assignProjects);
+router.get('/interns/:id/projects', internProjectController.getProjectsByIntern);
+router.get('/projects/:id/interns', internProjectController.getInternsByProject);
+router.get('/interns/project', projectController.getAllProjects);
+router.post('/interns/project', projectController.addProject);
+router.put('/projects/status', projectController.updateProjectStatus);
+router.post('/interns/projects/unassign', internProjectController.unassignProjectFromInterns);
+router.get('/projects/:id/history', internProjectController.getProjectHistory);
+router.post('/projects/:id/history', internProjectController.addProjectHistory);
 
 
 module.exports = router;
