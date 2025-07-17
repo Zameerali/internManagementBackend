@@ -10,6 +10,7 @@ router.get('/interns/:id/profile', internController.getInternWithProfile);
 router.post('/interns', internController.createIntern);
 
 
+router.get('/interns/tasks/:id', taskController.getTasksByProject);
 router.post('/interns/:id/tasks', taskController.addTask);
 router.get('/interns/:id/tasks', taskController.getTasksByIntern);
 router.put('/tasks/status', taskController.updateTaskStatus);

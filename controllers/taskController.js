@@ -37,4 +37,17 @@ exports.getAllTasksWithIntern = async (req, res) => {
   }
 };
 
+exports.getTasksByProject = async (req, res) => {
+  try {
+    const project_id = req.params.id;
+    if (!project_id) {
+      return res.status(400).json({ error: 'Project ID is required' });
+    }
+    const tasks = await Task.getTasksByProject(project_id);
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 
