@@ -5,7 +5,15 @@ const Profile = require('../models/profileModel');
 exports.getAllInterns = async (req, res) => {
   try {
     const interns = await Intern.getAllInterns();
-    res.json(interns);
+    // Attach profile to each intern
+    const internsWithProfiles = await Promise.all(
+      interns.map(async (intern) => {
+        const profileRows = await Profile.getProfileByInternId(intern.id);
+        intern.profile = profileRows[0] || null;
+        return intern;
+      })
+    );
+    res.json(internsWithProfiles);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

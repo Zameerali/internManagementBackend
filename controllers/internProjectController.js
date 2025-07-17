@@ -75,3 +75,12 @@ exports.unassignProjectFromInterns = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.getAllAssignedInterns = async (req, res) => {
+  try {
+    const assignedMap = await InternProject.getAllAssignedInterns();
+    res.json(assignedMap);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

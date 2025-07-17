@@ -16,6 +16,7 @@ router.put('/tasks/status', taskController.updateTaskStatus);
 router.get('/tasks/full', taskController.getAllTasksWithIntern);
 
 
+router.get('/assigned-interns', internProjectController.getAllAssignedInterns);
 router.post('/interns/projects', internProjectController.assignProjects);
 router.get('/interns/:id/projects', internProjectController.getProjectsByIntern);
 router.get('/projects/:id/interns', internProjectController.getInternsByProject);

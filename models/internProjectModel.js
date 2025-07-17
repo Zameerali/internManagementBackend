@@ -20,7 +20,17 @@ module.exports = {
       )
     );
   },
-
+    getAllAssignedInterns: async () => {
+    const [rows] = await db.query(
+      `SELECT project_id, intern_id FROM intern_projects`
+    );
+    const map = {};
+    rows.forEach(({ project_id, intern_id }) => {
+      if (!map[project_id]) map[project_id] = [];
+      map[project_id].push(intern_id);
+    });
+    return map;
+  },
   getProjectsByIntern: (intern_id) =>
     db.query(`
       SELECT p.*
