@@ -1,53 +1,66 @@
-
-const Intern = require('../models/internModel');
-const Profile = require('../models/profileModel');
+const { Intern, Profile } = require('../models');
 
 exports.getAllInterns = async (req, res) => {
   try {
-    const interns = await Intern.getAllInterns();
-    // Attach profile to each intern
-    const internsWithProfiles = await Promise.all(
-      interns.map(async (intern) => {
-        const profileRows = await Profile.getProfileByInternId(intern.id);
-        intern.profile = profileRows[0] || null;
-        return intern;
-      })
-    );
-    res.json(internsWithProfiles);
+    const interns = await Intern.findAll({
+      include: [{ model: Profile, required: false }],
+    });
+    const internsWithProfiles = interns.map((intern) => ({
+      ...intern.get({ plain: true }),
+      profile: intern.Profile || null,
+    }));
+    return res.json(internsWithProfiles);
   } catch (err) {
+    console.error('getAllInterns: Error:', err);
     res.status(500).json({ error: err.message });
   }
 };
 
 exports.getInternWithProfile = async (req, res) => {
   try {
-    const internId = req.params.id;
-
-    const intern = await Intern.getInternById(internId); 
-    const profileRows = await Profile.getProfileByInternId(internId);
-
-    intern.profile = profileRows[0] || null;
-
-    res.json(intern);
+    const internId = parseInt(req.params.id, 10);
+    if (!internId || isNaN(internId)) {
+      return res.status(400).json({ error: 'Invalid intern ID' });
+    }
+    const intern = await Intern.findByPk(internId, {
+      include: [{ model: Profile, required: false }],
+    });
+    if (!intern) {
+      return res.status(404).json({ error: 'Intern not found' });
+    }
+    const internData = {
+      ...intern.get({ plain: true }),
+      profile: intern.Profile || null,
+    };
+    res.json(internData);
   } catch (err) {
+    console.error('getInternWithProfile: Error:', err);
     res.status(500).json({ error: err.message });
   }
 };
+
 exports.createIntern = async (req, res) => {
   try {
     const { name, email, joined_date, bio, linkedin } = req.body;
     if (!name || !email || !joined_date) {
-      return res.status(400).json({ error: "Missing required fields" });
+      return res.status(400).json({ error: 'Missing required fields' });
     }
-    const intern = await Intern.createIntern({ name, email, joined_date });
+    const intern = await Intern.create({ name, email, joined_date });
+    let profile = null;
     if (bio || linkedin) {
-      const Profile = require('../models/profileModel');
-      await Profile.createProfile(intern.id, { bio: bio || '', linkedin: linkedin || '' });
-      intern.profile = { bio: bio || '', linkedin: linkedin || '' };
+      profile = await Profile.create({
+        intern_id: intern.id,
+        bio: bio || '',
+        linkedin: linkedin || '',
+      });
     }
-    res.status(201).json(intern);
+    const internData = {
+      ...intern.get({ plain: true }),
+      profile: profile ? profile.get({ plain: true }) : null,
+    };
+    res.status(201).json(internData);
   } catch (err) {
+    console.error('createIntern: Error:', err);
     res.status(500).json({ error: err.message });
   }
 };
-

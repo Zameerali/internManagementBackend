@@ -11,24 +11,24 @@ const ProjectHistory = sequelize.define('ProjectHistory', {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false
   },
-  title: {
-    type: DataTypes.STRING(255),
-    allowNull: false
+  intern_id: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: true
   },
-  description: {
-    type: DataTypes.TEXT,
-    allowNull: false
-  },
-  date: {
-    type: DataTypes.DATE,
-    allowNull: false
-  },
-  status: {
+  action: {
     type: DataTypes.STRING(50),
+    allowNull: false
+    },
+  status: {
+    type: DataTypes.STRING(20),
+    allowNull: true
+  },
+  timestamp: {
+    type: DataTypes.DATE,
     allowNull: false
   }
 }, {
-  tableName: 'projecthistory',
+  tableName: 'project_history',
   timestamps: false
 });
 

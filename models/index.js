@@ -1,9 +1,11 @@
-const Intern = require('./internModel')(sequelize, DataTypes);
-const Profile = require('./profileModel')(sequelize, DataTypes);
-const InternProject = require('./internProjectModel')(sequelize, DataTypes);
-const ProjectHistory = require('./projectHistoryModel')(sequelize, DataTypes);
-const Task = require('./taskModel')(sequelize, DataTypes);
-const Project = require('./projectModel')(sequelize, DataTypes);
+
+const { sequelize, DataTypes } = require('../config/db.config');
+const Intern = require('./internModel')
+const Profile = require('./profileModel')
+const InternProject = require('./internProjectModel')
+const ProjectHistory = require('./projectHistoryModel')
+const Task = require('./taskModel')
+const Project = require('./projectModel')
 
 Intern.hasOne(Profile, { foreignKey: 'intern_id' });
 Profile.belongsTo(Intern, { foreignKey: 'intern_id' });
