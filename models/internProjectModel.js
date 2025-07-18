@@ -38,6 +38,7 @@ module.exports = {
       JOIN intern_projects ip ON p.id = ip.project_id
       WHERE ip.intern_id = ?
     `, [intern_id]),
+    
   getInternsByProject: (project_id) =>
     db.query(`
       SELECT i.*
