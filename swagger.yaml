@@ -1,0 +1,582 @@
+openapi: 3.0.3
+info:
+  title: Intern Management API
+  version: 1.0.0
+  description: API documentation for Intern, Project, and Task Management System
+
+servers:
+  - url: http://localhost:3000/api
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # AUTH
+    AuthRegisterRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+    AuthRegisterResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+    AuthLoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    AuthLoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+
+    # INTERN
+    InternInput:
+      type: object
+      required: [name, email, joined_date]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        joined_date:
+          type: string
+          format: date
+        bio:
+          type: string
+        linkedin:
+          type: string
+    Intern:
+      allOf:
+        - $ref: '#/components/schemas/InternInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+            profile:
+              type: object
+              properties:
+                bio:
+                  type: string
+                linkedin:
+                  type: string
+
+    # TASK
+    TaskInput:
+      type: object
+      required: [intern_id, project_id, title, description, task_date]
+      properties:
+        intern_id:
+          type: integer
+        project_id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        task_date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [pending, in_progress, completed]
+    Task:
+      allOf:
+        - $ref: '#/components/schemas/TaskInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+
+    # PROJECT
+    ProjectInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+          enum: [in_progress, completed]
+    Project:
+      allOf:
+        - $ref: '#/components/schemas/ProjectInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+
+    # PROFILE
+    Profile:
+      type: object
+      properties:
+        id:
+          type: integer
+        intern_id:
+          type: integer
+        bio:
+          type: string
+        linkedin:
+          type: string
+
+    # PROJECT HISTORY
+    ProjectHistoryInput:
+      type: object
+      required: [action]
+      properties:
+        action:
+          type: string
+        status:
+          type: string
+        intern_id:
+          type: integer
+    ProjectHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        project_id:
+          type: integer
+        intern_id:
+          type: integer
+        action:
+          type: string
+        status:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    # ASSIGNMENT
+    AssignProjectsInput:
+      type: object
+      required: [intern_ids, project_id]
+      properties:
+        intern_ids:
+          type: array
+          items:
+            type: integer
+        project_id:
+          type: integer
+
+    UnassignProjectsInput:
+      type: object
+      required: [intern_ids, project_id]
+      properties:
+        intern_ids:
+          type: array
+          items:
+            type: integer
+        project_id:
+          type: integer
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Auth
+  - name: Interns
+  - name: Tasks
+  - name: Projects
+  - name: Assignments
+  - name: History
+
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRegisterRequest'
+      responses:
+        '201':
+          description: User registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthRegisterResponse'
+        '400':
+          description: Invalid input
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login and receive JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthLoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthLoginResponse'
+        '401':
+          description: Invalid credentials
+
+  /interns:
+    get:
+      tags: [Interns]
+      summary: Get all interns (with profile)
+      responses:
+        '200':
+          description: List of interns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Intern'
+      security:
+        - bearerAuth: []
+    post:
+      tags: [Interns]
+      summary: Create a new intern (optionally with profile)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InternInput'
+      responses:
+        '201':
+          description: Intern created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Intern'
+      security:
+        - bearerAuth: []
+
+  /interns/{id}/profile:
+    get:
+      tags: [Interns]
+      summary: Get intern profile by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Intern profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Intern'
+      security:
+        - bearerAuth: []
+
+  /interns/tasks/{id}:
+    get:
+      tags: [Tasks]
+      summary: Get tasks by project ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+      security:
+        - bearerAuth: []
+
+  /interns/{id}/tasks:
+    post:
+      tags: [Tasks]
+      summary: Add a task for an intern
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskInput'
+      responses:
+        '201':
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+      security:
+        - bearerAuth: []
+    get:
+      tags: [Tasks]
+      summary: Get tasks by intern ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+      security:
+        - bearerAuth: []
+
+  /tasks/status:
+    put:
+      tags: [Tasks]
+      summary: Update task status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, status]
+              properties:
+                id:
+                  type: integer
+                status:
+                  type: string
+                  enum: [pending, in_progress, completed]
+      responses:
+        '200':
+          description: Task status updated
+      security:
+        - bearerAuth: []
+
+  /tasks/full:
+    get:
+      tags: [Tasks]
+      summary: Get all tasks with intern info
+      responses:
+        '200':
+          description: List of tasks with intern info
+      security:
+        - bearerAuth: []
+
+  /assigned-interns:
+    get:
+      tags: [Assignments]
+      summary: Get all assigned interns
+      responses:
+        '200':
+          description: List of assigned interns
+      security:
+        - bearerAuth: []
+
+  /interns/projects:
+    post:
+      tags: [Assignments]
+      summary: Assign projects to interns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignProjectsInput'
+      responses:
+        '201':
+          description: Projects assigned
+      security:
+        - bearerAuth: []
+
+  /interns/{id}/projects:
+    get:
+      tags: [Assignments]
+      summary: Get projects by intern ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+      security:
+        - bearerAuth: []
+
+  /projects/{id}/interns:
+    get:
+      tags: [Assignments]
+      summary: Get interns by project ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: List of interns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Intern'
+      security:
+        - bearerAuth: []
+
+  /interns/project:
+    get:
+      tags: [Projects]
+      summary: Get all projects
+      responses:
+        '200':
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+      security:
+        - bearerAuth: []
+    post:
+      tags: [Projects]
+      summary: Add a new project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectInput'
+      responses:
+        '201':
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+      security:
+        - bearerAuth: []
+
+  /projects/status:
+    put:
+      tags: [Projects]
+      summary: Update project status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, status]
+              properties:
+                id:
+                  type: integer
+                status:
+                  type: string
+                  enum: [in_progress, completed]
+      responses:
+        '200':
+          description: Project status updated
+      security:
+        - bearerAuth: []
+
+  /interns/projects/unassign:
+    post:
+      tags: [Assignments]
+      summary: Unassign project from interns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnassignProjectsInput'
+      responses:
+        '200':
+          description: Project unassigned
+      security:
+        - bearerAuth: []
+
+  /projects/{id}/history:
+    get:
+      tags: [History]
+      summary: Get project history by project ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Project history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectHistory'
+      security:
+        - bearerAuth: []
+    post:
+      tags: [History]
+      summary: Add project history
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectHistoryInput'
+      responses:
+        '201':
+          description: Project history added
+      security:
+        - bearerAuth: []

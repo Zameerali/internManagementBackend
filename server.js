@@ -2,10 +2,23 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const cors = require('cors')
+const authRoutes = require('./routes/auth');
 const apiRoutes = require('./routes/api');
+const cookieParser = require('cookie-parser');
 
-app.use(cors());
+const { swaggerUi, swaggerSpec } = require("./swagger");
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./swagger.yaml');
+
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
+app.use(cookieParser());
 app.use(express.json());
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
 
 const PORT = process.env.PORT || 3000;

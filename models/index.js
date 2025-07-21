@@ -6,6 +6,7 @@ const InternProject = require('./internProjectModel')
 const ProjectHistory = require('./projectHistoryModel')
 const Task = require('./taskModel')
 const Project = require('./projectModel')
+const User = require('./user')
 
 Intern.hasOne(Profile, { foreignKey: 'intern_id' });
 Profile.belongsTo(Intern, { foreignKey: 'intern_id' });
@@ -37,5 +38,6 @@ module.exports = {
   InternProject,
   ProjectHistory,
   Task,
-  Project
+  Project,
+  User
 };
