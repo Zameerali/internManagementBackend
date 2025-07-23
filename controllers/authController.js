@@ -1,18 +1,34 @@
-const { User } = require('../models');
+const { User,UserProfile } = require('../models');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
 exports.register = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, first_name, last_name, phone, bio, pic_url } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
+
   try {
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email already in use' });
+    }
+
     const hash = await bcrypt.hash(password, 10);
     const user = await User.create({ email, password: hash });
+    await UserProfile.create({
+      user_id: user.id,
+      first_name,
+      last_name,
+      bio,
+      phone,
+      pic_url
+    });
     res.status(201).json({ id: user.id, email: user.email });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    if (!res.headersSent) {
+      res.status(500).json({ error: err.message });
+    }
   }
 };
 
@@ -62,5 +78,20 @@ exports.checkAuth = async (req, res) => {
   } catch (err) {
     console.error('Check-auth error:', err.message);
     res.json({ isAuthenticated: false });
+  }
+};
+
+exports.checkEmailExists = async (req, res) => {
+  const { email } = req.query;
+  if (!email) return res.status(400).json({ error: 'Email is required' });
+  try {
+    const user = await User.findOne({ where: { email } });
+    if (user) {
+      return res.json({ exists: true });
+    }
+    res.json({ exists: false });
+  } catch (err) {
+    console.error('Check-email-exists error:', err.message);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };

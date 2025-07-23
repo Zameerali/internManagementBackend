@@ -5,6 +5,7 @@ const internController = require('../controllers/internController');
 const taskController = require('../controllers/taskController');
 const internProjectController = require('../controllers/internProjectController');
 const projectController = require('../controllers/projectController');
+const userProfileController = require('../controllers/userProfileController');
 const auth = require('../middleware/auth');
 
 
@@ -12,6 +13,9 @@ const auth = require('../middleware/auth');
 
 
 router.use(auth);
+router.get('/auth/profile/me', userProfileController.getMyProfile);
+router.put('/auth/profile/me', userProfileController.updateMyProfile);
+
 router.get('/interns', internController.getAllInterns);
 router.get('/interns/:id/profile', internController.getInternWithProfile);
 router.post('/interns', internController.createIntern);

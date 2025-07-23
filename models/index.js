@@ -7,6 +7,7 @@ const ProjectHistory = require('./projectHistoryModel')
 const Task = require('./taskModel')
 const Project = require('./projectModel')
 const User = require('./user')
+const UserProfile = require('./userProfileModel')
 
 Intern.hasOne(Profile, { foreignKey: 'intern_id' });
 Profile.belongsTo(Intern, { foreignKey: 'intern_id' });
@@ -30,6 +31,8 @@ Project.hasMany(Task, { foreignKey: 'project_id' });
 Task.belongsTo(Intern, { foreignKey: 'intern_id' });
 Intern.hasMany(Task, { foreignKey: 'intern_id' });
 
+User.hasOne(UserProfile, { foreignKey: 'user_id' });
+UserProfile.belongsTo(User, { foreignKey: 'user_id' });
 
 module.exports = {
   sequelize,
@@ -39,5 +42,6 @@ module.exports = {
   ProjectHistory,
   Task,
   Project,
-  User
+  User,
+  UserProfile
 };
