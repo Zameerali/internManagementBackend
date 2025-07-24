@@ -1,11 +1,12 @@
 const { Task, Intern, Project } = require('../models');
+const { Op } = require('sequelize'); 
 
 exports.addTask = async (req, res) => {
   try {
-    const { intern_id, project_id, title, description, task_date, status } = req.body;
-    console.log('addTask: Payload:', { intern_id, project_id, title, description, task_date, status });
+    const { intern_id, project_id, title, description, task_date, deadline, status } = req.body;
+    console.log('addTask: Payload:', { intern_id, project_id, title, description, task_date, deadline, status });
 
-    if (!intern_id || !project_id || !title || !description || !task_date) {
+    if (!intern_id || !project_id || !title || !description || !task_date || !deadline) {
       console.log('addTask: Missing required fields');
       return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -28,6 +29,7 @@ exports.addTask = async (req, res) => {
       title,
       description,
       task_date,
+      deadline,
       status: status || 'pending',
     });
     res.status(201).json({ message: 'Task added' });
@@ -81,8 +83,17 @@ exports.updateTaskStatus = async (req, res) => {
 
 exports.getAllTasksWithIntern = async (req, res) => {
   try {
-    console.log('getAllTasksWithIntern: Fetching tasks');
+    const {deadlineStatus } = req.query;
+    let where = {};
+    if (deadlineStatus === 'passed') {
+      where.deadline = { [Op.lt]: new Date() };
+    }
+    else if (deadlineStatus === 'upcoming') {
+      where.deadline = { [Op.gte]: new Date() };
+    }
+    
     const tasks = await Task.findAll({
+      where,
       include: [
         {
           model: Intern,

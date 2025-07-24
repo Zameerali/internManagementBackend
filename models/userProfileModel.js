@@ -7,11 +7,11 @@ const UserProfile = sequelize.define('UserProfile', {
   first_name: { type: DataTypes.STRING(50), allowNull: false },
   last_name: { type: DataTypes.STRING(50), allowNull: false },
   bio: { type: DataTypes.TEXT, allowNull: false },
-  pic_url: { type: DataTypes.TEXT, allowNull: false },
+  image_url: { type: DataTypes.TEXT, allowNull: false },
     phone: { type: DataTypes.STRING(15), allowNull: false },
 }, {
   tableName: 'user_profile',
-  timestamps: false
+  timestamps: true
 });
 
 module.exports = UserProfile;

@@ -22,11 +22,11 @@ exports.getMyProfile = async (req, res) => {
 exports.updateMyProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { first_name, last_name, bio, phone, pic_url } = req.body;
+    const { first_name, last_name, bio, phone, image_url } = req.body;
     const profile = await UserProfile.findOne({ where: { user_id: userId } });
     if (!profile) return res.status(404).json({ error: "Profile not found" });
 
-    await profile.update({ first_name, last_name, bio, phone, pic_url });
+    await profile.update({ first_name, last_name, bio, phone, image_url });
 
     const updatedProfileJson = profile.toJSON();
     updatedProfileJson.email = profile.User?.email || null;

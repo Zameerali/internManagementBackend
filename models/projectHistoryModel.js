@@ -29,7 +29,7 @@ const ProjectHistory = sequelize.define('ProjectHistory', {
   }
 }, {
   tableName: 'project_history',
-  timestamps: false
+  timestamps: true
 });
 
 module.exports = ProjectHistory;

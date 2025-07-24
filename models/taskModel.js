@@ -26,13 +26,17 @@ const Task = sequelize.define('Task', {
     type: DataTypes.DATEONLY,
     allowNull: false
   },
+  deadline: {
+    type: DataTypes.DATEONLY,
+    allowNull: false
+  },
   status: {
     type: DataTypes.ENUM('pending', 'in_progress', 'completed'),
     defaultValue: 'pending'
   }
 }, {
   tableName: 'tasks',
-  timestamps: false
+  timestamps: true
 });
 
 module.exports = Task;

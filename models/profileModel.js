@@ -21,7 +21,7 @@ const Profile = sequelize.define('Profile', {
   }
 }, {
   tableName: 'profiles',
-  timestamps: false
+  timestamps: true
 });
 
 module.exports = Profile;

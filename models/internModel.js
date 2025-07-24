@@ -20,7 +20,7 @@ const Intern = sequelize.define('Intern', {
   }
 }, {
   tableName: 'interns',
-  timestamps: false 
+  timestamps: true
 });
 
 module.exports = Intern;

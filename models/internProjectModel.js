@@ -17,7 +17,7 @@ const InternProject = sequelize.define('InternProject', {
   }
 }, {
   tableName: 'intern_projects',
-  timestamps: false
+  timestamps: true
 });
 
 module.exports = InternProject;
