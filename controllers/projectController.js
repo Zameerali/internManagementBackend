@@ -1,4 +1,4 @@
-const { Project, ProjectHistory } = require('../models');
+const { Project, ProjectHistory,Intern } = require('../models');
 
 exports.addProject = async (req, res) => {
   try {
@@ -68,6 +68,21 @@ exports.getAllProjects = async (req, res) => {
     res.json(projects.map((p) => p.get({ plain: true })));
   } catch (err) {
     console.error('getAllProjects: Error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+exports.getMyProjects = async (req, res) => {
+  try {
+    if (req.user.role !== 'intern') {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    const intern = await Intern.findOne({ where: { user_id: req.user.id } });
+    if (!intern) {
+      return res.status(404).json({ error: 'Intern profile not found' });
+    }
+    const projects = await intern.getProjects();
+    res.json(projects.map((p) => p.get({ plain: true })));
+  } catch (err) {
     res.status(500).json({ message: 'Internal server error' });
   }
 };

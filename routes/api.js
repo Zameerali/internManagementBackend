@@ -33,5 +33,6 @@ router.get('/interns/:id/projects', internProjectController.getProjectsByIntern)
 router.get('/interns/:id/tasks', taskController.getTasksByIntern);
 router.put('/tasks/status', taskController.updateTaskStatus);
 router.get('/tasks/my', taskController.getMyTasks);
+router.get('/projects/my', projectController.getMyProjects);
 
 module.exports = router;
