@@ -69,13 +69,14 @@ exports.logout = (req, res) => {
 };
 exports.checkAuth = async (req, res) => {
   const token = req.cookies.jwt;
-  // console.log('Check-auth JWT:', token);
   if (!token) return res.json({ isAuthenticated: false });
   try {
     if (!JWT_SECRET) throw new Error('JWT_SECRET is not defined');
     const decoded = jwt.verify(token, JWT_SECRET);
-    // console.log('Check-auth decoded:', decoded);
-    res.json({ isAuthenticated: true });
+    res.json({
+      isAuthenticated: true,
+      role: decoded.role,
+    });
   } catch (err) {
     console.error('Check-auth error:', err.message);
     res.json({ isAuthenticated: false });
