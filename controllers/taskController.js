@@ -75,9 +75,14 @@ exports.updateTaskStatus = async (req, res) => {
       console.log('updateTaskStatus: Task not found:', id);
       return res.status(404).json({ error: 'Task not found' });
     }
-    if(req.user.role === 'intern' && req.user.id !== task.intern_id) {
-      return res.status(403).json({ error: 'Forbidden' });
+
+    if (req.user.role === 'intern') {
+      const intern = await Intern.findOne({ where: { user_id: req.user.id } });
+      if (!intern || intern.id !== task.intern_id) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
     }
+
     await task.update({ status });
     res.json({ message: 'Task status updated' });
   } catch (err) {
@@ -140,9 +145,21 @@ exports.getMyTasks = async (req, res) => {
     if (req.user.role !== 'intern') {
       return res.status(403).json({ error: 'Forbidden' });
     }
-    const tasks = await Task.findAll({ where: { intern_id: req.user.id } });
+
+    console.log('getMyTasks: user_id:', req.user.id);
+
+    const intern = await Intern.findOne({ where: { user_id: req.user.id } });
+    if (!intern) {
+      console.log('getMyTasks: No intern record found for user:', req.user.id);
+      return res.status(404).json({ error: 'Intern record not found' });
+    }
+
+    console.log('getMyTasks: intern_id:', intern.id);
+
+    const tasks = await Task.findAll({ where: { intern_id: intern.id } });
     res.json(tasks.map((t) => t.get({ plain: true })));
   } catch (err) {
+    console.error('getMyTasks: Error:', err);
     res.status(500).json({ error: err.message });
   }
 };
