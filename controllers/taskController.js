@@ -40,6 +40,9 @@ exports.addTask = async (req, res) => {
 };
 
 exports.getTasksByIntern = async (req, res) => {
+  if (req.user.role === 'student' && req.user.id !== Number(req.params.id)) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
   try {
     const intern_id = parseInt(req.params.id, 10);
     console.log('getTasksByIntern: intern_id:', intern_id);
@@ -72,7 +75,9 @@ exports.updateTaskStatus = async (req, res) => {
       console.log('updateTaskStatus: Task not found:', id);
       return res.status(404).json({ error: 'Task not found' });
     }
-
+    if(req.user.role === 'student' && req.user.id !== task.intern_id) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
     await task.update({ status });
     res.json({ message: 'Task status updated' });
   } catch (err) {
@@ -91,7 +96,6 @@ exports.getAllTasksWithIntern = async (req, res) => {
     else if (deadlineStatus === 'upcoming') {
       where.deadline = { [Op.gte]: new Date() };
     }
-    
     const tasks = await Task.findAll({
       where,
       include: [

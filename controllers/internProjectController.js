@@ -48,6 +48,9 @@ exports.assignProjects = async (req, res) => {
 };
 
 exports.getProjectsByIntern = async (req, res) => {
+  if (req.user.role === 'student' && req.user.id !== Number(req.params.id)) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
   try {
     const intern_id = parseInt(req.params.id, 10);
     console.log('getProjectsByIntern: intern_id:', intern_id);

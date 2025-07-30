@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 exports.register = async (req, res) => {
-  const { email, password, first_name, last_name, phone, bio, image_url } = req.body;
+  const { email, password, role, first_name, last_name, phone, bio, image_url } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
 
   try {
@@ -15,7 +15,8 @@ exports.register = async (req, res) => {
     }
 
     const hash = await bcrypt.hash(password, 10);
-    const user = await User.create({ email, password: hash });
+    const userRole = (role === "admin" || role === "student") ? role : "student";
+    const user = await User.create({ email, password: hash, role: userRole });
     await UserProfile.create({
       user_id: user.id,
       first_name,
@@ -24,7 +25,7 @@ exports.register = async (req, res) => {
       phone,
       image_url
     });
-    res.status(201).json({ id: user.id, email: user.email });
+    res.status(201).json({ id: user.id, email: user.email, role: user.role });
   } catch (err) {
     if (!res.headersSent) {
       res.status(500).json({ error: err.message });
@@ -40,7 +41,7 @@ exports.login = async (req, res) => {
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
     if (!token) {
       throw new Error('Failed to generate JWT token');
     }

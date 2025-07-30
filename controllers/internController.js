@@ -17,6 +17,9 @@ exports.getAllInterns = async (req, res) => {
 };
 
 exports.getInternWithProfile = async (req, res) => {
+  if (req.user.role === 'student' && req.user.id !== Number(req.params.id)) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
   try {
     const internId = parseInt(req.params.id, 10);
     if (!internId || isNaN(internId)) {
