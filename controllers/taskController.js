@@ -134,3 +134,15 @@ exports.getTasksByProject = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.getMyTasks = async (req, res) => {
+  try {
+    if (req.user.role !== 'intern') {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    const tasks = await Task.findAll({ where: { intern_id: req.user.id } });
+    res.json(tasks.map((t) => t.get({ plain: true })));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
