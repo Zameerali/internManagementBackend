@@ -11,9 +11,6 @@ exports.getMyProfile = async (req, res) => {
     const profileJson = profile.toJSON();
     profileJson.email = profile.User?.email || null;
     profileJson.role = profile.User?.role || null;
-
-
-
     res.json(profileJson);
   } catch (err) {
     res.status(500).json({ error: err.message });
