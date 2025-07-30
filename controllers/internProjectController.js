@@ -48,7 +48,7 @@ exports.assignProjects = async (req, res) => {
 };
 
 exports.getProjectsByIntern = async (req, res) => {
-  if (req.user.role === 'student' && req.user.id !== Number(req.params.id)) {
+  if (req.user.role === 'intern' && req.user.id !== Number(req.params.id)) {
     return res.status(403).json({ error: 'Forbidden' });
   }
   try {

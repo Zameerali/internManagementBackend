@@ -15,7 +15,7 @@ exports.register = async (req, res) => {
     }
 
     const hash = await bcrypt.hash(password, 10);
-    const userRole = (role === "admin" || role === "student") ? role : "student";
+    const userRole = (role === "admin" || role === "intern") ? role : "intern";
     const user = await User.create({ email, password: hash, role: userRole });
     await UserProfile.create({
       user_id: user.id,

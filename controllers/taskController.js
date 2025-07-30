@@ -40,7 +40,7 @@ exports.addTask = async (req, res) => {
 };
 
 exports.getTasksByIntern = async (req, res) => {
-  if (req.user.role === 'student' && req.user.id !== Number(req.params.id)) {
+  if (req.user.role === 'intern' && req.user.id !== Number(req.params.id)) {
     return res.status(403).json({ error: 'Forbidden' });
   }
   try {
@@ -75,7 +75,7 @@ exports.updateTaskStatus = async (req, res) => {
       console.log('updateTaskStatus: Task not found:', id);
       return res.status(404).json({ error: 'Task not found' });
     }
-    if(req.user.role === 'student' && req.user.id !== task.intern_id) {
+    if(req.user.role === 'intern' && req.user.id !== task.intern_id) {
       return res.status(403).json({ error: 'Forbidden' });
     }
     await task.update({ status });
