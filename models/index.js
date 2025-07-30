@@ -12,6 +12,10 @@ const UserProfile = require('./userProfileModel')
 Intern.hasOne(Profile, { foreignKey: 'intern_id' });
 Profile.belongsTo(Intern, { foreignKey: 'intern_id' });
 
+Intern.belongsTo(User, { foreignKey: 'user_id' });
+User.hasOne(Intern, { foreignKey: 'user_id' });   
+
+
 InternProject.belongsTo(Intern, { foreignKey: 'intern_id' });
 InternProject.belongsTo(Project, { foreignKey: 'project_id' });
 

@@ -14,6 +14,11 @@ const Intern = sequelize.define('Intern', {
     type: DataTypes.STRING(255),
     allowNull: false
   },
+    user_id: { 
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: true,
+    unique: true,
+  },
   joined_date: {
     type: DataTypes.DATEONLY,
     allowNull: false
